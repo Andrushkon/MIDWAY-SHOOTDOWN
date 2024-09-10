@@ -1,0 +1,168 @@
+body{
+  pointer-events: none;
+  background-image: url("background.jpg");
+  background-color: #cccccc ;
+  background-size: cover;
+  cursor: none;
+}
+
+
+  #controls{
+    position:absolute;
+    top: 145px;
+    left:25px;
+    width:125px;
+    height:125px;
+    background-color: gray;
+    opacity: 0.3;
+    border-radius: 125px;
+  }
+  #stick{
+    position:absolute;
+    top: 175px;
+    left:60px;
+    width:60px;
+    height:60px;
+    background-color: gray;
+    opacity: 0.7;
+    border-radius: 60px;
+    z-index: 5;
+  }
+  #player{
+    width:45px;
+    height:45px;
+    background-color: skyblue;
+    position:absolute;
+    top:0px;
+    left:0px;
+    border: 8px solid black;
+    border-radius:75px;
+  }
+  .enemy{
+    width:45px;
+    height:45px;
+    background-color:rgb(240, 128, 128);
+    position:absolute;
+    top:0px;
+    left:0px;
+    border: 8px solid black;
+    border-radius:75px;
+  }
+  .eye{
+    width:7px;
+    height:7px;
+    background-color: white;
+    position:absolute;
+    border: 7px solid white;
+    border-radius:9px;
+    
+  }
+  .eyeball{
+    width:7px;
+    height:7px;
+    background-color: black;
+    position:absolute;
+
+    border-radius:7px;
+
+
+  }
+  #consola{
+    z-index: 5;
+  }
+  .gun{
+      height:100px;
+    z-index:5;
+    position:absolute;
+
+  }
+  .bullet{
+    width: 30px;
+    position:absolute;
+  }
+  
+.tree{
+  height: 200px;
+  position: absolute;
+  z-index: 11;
+}
+.shield{
+position:absolute;
+height:400px;
+animation: rotateZ linear 2s infinite;
+}
+@keyframes rotateZ{
+  from{transform: rotateZ(0deg);}
+  from{transform: rotateZ(360deg);}
+}
+#healthbar{
+  position: absolute;
+  width: 85px;
+  height: 10px;
+  background-color:rgba(59, 59, 59, 0.42);
+
+border: 3px black solid;
+}
+#health{
+  position: absolute;
+  width: 85px;
+  height: 10px;
+  background-color:greenyellow;
+}
+#crosshair{
+  height: 40px;
+  position:absolute;
+z-index: 10;
+}
+.shielditem{
+  position: absolute;
+  width: 100px;
+}
+#UI{
+  z-index: 1000;
+  position: absolute;
+
+}
+.gunslot{
+  width: 110px;
+  height: 110px;
+  background: radial-gradient(circle, rgba(175,175,175,1) 0%, rgba(113,113,113,1) 100%);
+  position: absolute;
+border: 3px solid black;
+  top: -150px;
+  border: 10px grey;
+
+}
+.gunimg{
+  height: 150px;
+  position: absolute;
+  left: -25px;
+  top: -10px;
+  transform: rotateZ(335deg) ;
+}
+.bullets{
+position: absolute;
+font-family: "Protest Guerrilla", sans-serif;
+font-size: 25px;
+left: 45px;
+text-align: center;
+
+bottom: 5px;
+color: white;
+}
+#gunslotcontainer{
+  position: absolute;
+}
+.Damageshow{
+  font-family: "Anton", sans-serif;
+  font-size: 20px;
+  animation:0.5s Damageshowanimation;
+  position: absolute;
+color: white;
+
+  
+}
+@keyframes Damageshowanimation{
+  50%{transform: translateY(-20px);}
+  100%{transform: translateY(20px);opacity: 0;}
+}
