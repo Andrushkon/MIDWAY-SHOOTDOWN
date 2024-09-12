@@ -1,73 +1,75 @@
 //consts
-const player=document.getElementById("player")
-const stick=document.getElementById("stick")
-const gun=document.getElementById("gun")
-const ehealth=document.getElementById("health")
-const healthbar=document.getElementById("healthbar")
-const crosshair=document.getElementById("crosshair")
-const eyeballs=document.getElementsByClassName("eyeball")
-const UI=document.getElementById("UI")
-const nofslots=3
-creategunslotcontainer()
-const gunslot=document.getElementsByClassName("gunslot")
-const gunimg=document.getElementsByClassName("gunimg")
-const bulletshow=document.getElementsByClassName("bullets")
-const gunslotcontainer=document.getElementById("gunslotcontainer")
-const min=3
-const bodyx=1200
-const bodyy=1200
-const isx=60
-const isy=175
-const maxx=-50
-const maxy=30
-const ds=200
 const raritysgradients=["radial-gradient(circle, rgba(175,175,175,1) 0%, rgba(113,113,113,1) 100%)","radial-gradient(circle, rgba(24,255,0,1) 0%, rgba(0,173,7,1) 100%)","radial-gradient(circle, rgba(0,174,255,1) 0%, rgba(0,91,134,1) 100%)","radial-gradient(circle, rgba(207,0,255,1) 0%, rgba(111,0,134,1) 100%)","radial-gradient(circle, rgba(255,199,0,1) 0%, rgba(176,149,0,1) 100%)"]
 const raritysgradients2=["rgba(175,175,175,1)","rgba(24,255,0,1)","rgba(0,174,255,1)","rgba(207,0,255,1)","rgba(255,199,0,1)"]
-const typesofgun=[["Riffle",36],["shotgun",6]]
+const consola=document.getElementById("consola")
+const menu=document.getElementById("menu")
+const game=document.getElementById("game")
+let startbutton
+let player
+let stick
+let gun
+let ehealth
+let healthbar
+let crosshair
+let eyeballs
+let UI
+let nofslots
+let gunslot
+let gunimg
+let bulletshow
+let gunslotcontainer
+let min
+let bodyx
+let bodyy
+let isx
+let isy
+let maxx
+let maxy
+let ds
+let typesofgun
+let home=true
 
 //Arrays
-let pickguns=[]
-let shieldmap=[]
-let bulletmap=[]
-let guns=gunslotcreate()
-let result=[]
-let enemys=[]
+let pickguns
+let shieldmap
+let bulletmap     
+let guns
+let result
+let enemys
 
 //Player variables
-let health=100
-let PlayerX=bodyx/2
-let PlayerY=bodyy/2
-player.style.left=PlayerX-22.5
-player.style.top=PlayerY-22.5
-let currentslot=0
-let MoveX=0
-let MoveY=0
-let angle=0
-let movespeed=0.1
-let dead=false
-let shield=false
+let health
+let PlayerX
+let PlayerY
+let currentslot
+let MoveX
+let MoveY
+let angle
+let movespeed
+let shield
 
 //Others
-let gunidx=0
-let bulletidx=0
-let enemyidx=0
-let moveidx=0
-let shootidx=0
-let reloadidx=0
-let reloadidx2=0
-let mousedown=false
-let cooldown=true
-let tactil=false
-let fps=60
-let sx=0
-let sy=0
+let gunidx
+let bulletidx
+let enemyidx
+let moveidx
+let shootidx
+let reloadidx
+let reloadidx2
+let mousedown
+let cooldown
+let tactil
+let fps
+let sx
+let sy
 let mybullet
-let mousex=0
-let mousey=0
-let playtime=0
+let mousex
+let mousey
+let playtime
 let windowx = window.innerWidth;
 let windowy = window.innerHeight;
 let newAura
+
 //Audios
 let shotgunsound= new Audio('shotgun.mp3');
 let Rifflesound= new Audio('Riffle.mp3');
@@ -77,10 +79,19 @@ let Rifflereload= new Audio('reloadriffle.mp3');
 Rifflereload.volume="0.2"
 let shotgunreloadfinish= new Audio('shotgunreloadfinish.mp3');
 
+searchMenuitems()
+function searchMenuitems(){
+        startbutton=document.getElementById("startbtn")
+startbutton.onclick=function(){
+    startbutton.style.backgroundColor="yellow"
+    Gamestart()
+}
+}
 
-Gamestart()
 function Gamestart(){
 
+createGame()
+assignvariables()
 uicreate()
 Playermove()
 Enemymove()
@@ -88,6 +99,8 @@ createShield("no",5)
 bulletmove()
 playtimeadd()
 createRandomPickgun(6)
+createEnemy()
+createShieldElement(274,583)
 document.documentElement.style.cursor = 'none';
 if (tactil==false){
 document.getElementById("controls").style.visibility="hidden"
@@ -95,6 +108,98 @@ stick.style.visibility="hidden"
 Playermove()
 createTree(bodyx,bodyy)
 }
+}
+function createGame(){
+    home=false
+    menu.innerHTML=""
+    game.innerHTML=`<div id="controls"> </div>
+    <div id="stick"></div>
+  
+    <img id="gun" class="gun" src="Riffle.png">
+
+<div id="player">
+  <div style="top:5px;left:1px;" class="eye">
+    <div class="eyeball"></div>
+  </div>
+  <div style="top:5px;left:26px;"class="eye">
+  <div class="eyeball"></div>
+</div>
+</div>
+<div id="healthbar"></div>
+<div id="health"></div>
+<img src="crosshair.png" id="crosshair"></img>
+<div id="UI">
+
+</div>`
+}
+function assignvariables(){
+    player=document.getElementById("player")
+stick=document.getElementById("stick")
+gun=document.getElementById("gun")
+ehealth=document.getElementById("health")
+healthbar=document.getElementById("healthbar")
+crosshair=document.getElementById("crosshair")
+eyeballs=document.getElementsByClassName("eyeball")
+UI=document.getElementById("UI")
+nofslots=3
+creategunslotcontainer()
+gunslot=document.getElementsByClassName("gunslot")
+gunimg=document.getElementsByClassName("gunimg")
+bulletshow=document.getElementsByClassName("bullets")
+gunslotcontainer=document.getElementById("gunslotcontainer")
+min=3
+bodyx=1200
+bodyy=1200
+isx=60
+isy=175
+maxx=-50
+maxy=30
+ds=200
+typesofgun=[["Riffle",36]]
+guns=gunslotcreate()
+pickguns=[]
+shieldmap=[]
+bulletmap=[]    
+result=[]
+enemys=[]
+health=100
+PlayerX=bodyx/2
+PlayerY=bodyy/2
+player.style.left=PlayerX-22.5
+player.style.top=PlayerY-22.5
+currentslot=0
+MoveX=0
+MoveY=0
+angle=0
+movespeed=0.1
+shield=false
+gunidx=0
+bulletidx=0
+enemyidx=0
+moveidx=0
+shootidx=0
+reloadidx=0
+reloadidx2=0
+mousedown=false
+cooldown=true
+tactil=false
+fps=60
+sx=0
+sy=0
+mousex=0
+mousey=0
+playtime=0
+}
+function goHome(){
+home=true
+game.innerHTML=""
+menu.innerHTML=`<button id="startbtn">START</button>
+  <div id="title"><strong>MIDWAY<br>SHOOTDOWN</strong>  </div>`
+Rifflereload.pause()
+Rifflesound.pause()
+deleteEverything()
+window.scroll(0,0)
+searchMenuitems()
 }
 function Demo(event)
 {
@@ -126,6 +231,7 @@ function Goback(){
         mousey=0
         stick.style.left=isx+"px"
     stick.style.top=isy+"px"
+
 }
 
 function moveplayer(){
@@ -192,12 +298,16 @@ mybullet.src="Bullet.png"
 }
 }
 document.addEventListener('touchstart',function(){
+    if (tactil==false){
     mousedown=true
     Demo(event)
+    }
 })
 document.addEventListener('touchmove',function(){
+    if (tactil==false){
     mousedown=true
     Demo(event)
+    }
 })
 document.addEventListener('touchend',function(){
     mousedown=false
@@ -217,6 +327,7 @@ function checkmove(idx){
 }
 
 function bulletmove(){
+    if (home==false){
     for (let index = 0; index < bulletmap.length; index++) {
         var idx=index
 
@@ -247,11 +358,12 @@ function bulletmove(){
             }
     }
 
-}
+}}
 setTimeout(function(){bulletmove()},1000/fps)
 }
-createEnemy()
+
 function createEnemy(){
+    if (home==false){
     let newEnemy=document.createElement("div")
     newEnemy.className="enemy"
     newEnemy=document.body.appendChild(newEnemy)
@@ -264,8 +376,12 @@ function createEnemy(){
     enemys[enemyidx]=myArray
     enemyidx++
     setTimeout(function(){createEnemy()},5000-(playtime*50))
+    }
 }
+
+
 function Enemymove(){
+    if (home==false){
     for (let index = 0; index < enemys.length; index++) {
 if (!(enemys[index]==0)){
     var myEnemyArray=enemys[index]
@@ -345,7 +461,7 @@ if ((x<PlayerX+pcolissions && x>PlayerX-pcolissions) && (y<PlayerY+pcolissions &
     {   if (shield==false){
         health--
         ehealth.style.width=85/100*health+"px"
-        if (health<0&&dead==false){
+        if (health<0&&home==false){
             Gameover()
         }
     }
@@ -360,9 +476,10 @@ enemys[index]=myEnemyArray
 }
 setTimeout(function(){Enemymove()},1000/fps) 
 } 
+}
+
 function Gameover(){
-    dead=true
-    location.reload(true);
+goHome()
 }
 
 var up=false
@@ -372,6 +489,7 @@ var right=false
 var collect=false
 
 document.addEventListener("keydown",function(){
+    if (tactil==false){
 let key=event.key
 if (key=="w"){
 up=true
@@ -410,7 +528,7 @@ changeslot(nkey-1)
 }
 if (key=="Escape"){
     deleteEverything()
-}
+}}
 })
 
 document.addEventListener("keyup",function(){
@@ -435,7 +553,7 @@ collect=false
 
 
 function Playermove(){
-
+    if (home==false){
 if(up==true){
     MoveY+=-movespeed
 }
@@ -528,7 +646,9 @@ myArray[0].style.background=`radial-gradient(circle, ${raritysgradients2[r]} 0%,
 Playermove()
     },1000/fps)
 }
+}
 document.addEventListener("mousemove",function(){
+    if (home==false){
 if (tactil==false){
     var addx=(scrollX)
     var addy=(scrollY)
@@ -552,7 +672,7 @@ for (let index = 0; index < 2; index++) {
 eyeballs[index].style.left=sx/120+"px"
     eyeballs[index].style.top=sy/120+"px"
 }}
-})
+}})
 var mouse=false
 document.addEventListener("mouseup",function(){
 mouse=false
@@ -560,11 +680,13 @@ mouse=false
 
 })
 document.addEventListener("mousedown",function(){
+
     mouse=true
+    if (home==false){
     if (tactil==false){
 mouseclick()
     }
-    
+}
     })
 function mouseclick(){
     if (guns[currentslot][3]==false && !(guns[currentslot]==0)){
@@ -633,7 +755,7 @@ function shotcooldownmake(myidx,shotcooldown){
 }
 function createBullet(a,type){
 
-
+    if (home==false){
     mybullet=document.createElement("img")
     mybullet.className="bullet"
     mybullet.src=type+".png"
@@ -659,6 +781,7 @@ function createBullet(a,type){
         bulletmap[bulletidx]=myArray
         bulletidx++
         }
+    }
 function Hitanimation(e,r){
 
     e.style.backgroundColor=`rgb(240, ${r*2}, ${r*2}`
@@ -836,7 +959,7 @@ currentslot=slot
 gun.src=guns[currentslot][0]+".png"
 }
 }
-createShieldElement(274,583)
+
 function createShieldElement(x,y){
 var newShield=document.createElement("img")
 newShield=document.body.appendChild(newShield)
@@ -993,7 +1116,7 @@ for (let index = 0; index <    enemys.length; index++) {
     }
 }
 for (let index = 0; index <    bulletmap.length; index++) {
-    if(!(bulletmap3[index]==0)){
+    if(!(bulletmap[index]==0)){
     bulletmap[index][0].remove()
     }
 }
@@ -1014,4 +1137,5 @@ ehealth.remove()
 healthbar.remove()
 crosshair.remove()
 document.documentElement.style.cursor="default"
+document.getElementsByClassName("tree")[0].remove()
 }
