@@ -4,6 +4,7 @@ const raritysgradients2=["rgba(175,175,175,1)","rgba(24,255,0,1)","rgba(0,174,25
 const consola=document.getElementById("consola")
 const menu=document.getElementById("menu")
 const game=document.getElementById("game")
+const typesofgun=[["Riffle",36],["shotgun",6]]
 let startbutton
 let player
 let stick
@@ -26,7 +27,6 @@ let isy
 let maxx
 let maxy
 let ds
-let typesofgun
 let home=true
 
 //Arrays
@@ -155,7 +155,6 @@ isy=175
 maxx=-50
 maxy=30
 ds=200
-typesofgun=[["Riffle",36]]
 guns=gunslotcreate()
 pickguns=[]
 shieldmap=[]
