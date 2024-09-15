@@ -4,7 +4,7 @@ const raritysgradients2=["rgba(175,175,175,1)","rgba(24,255,0,1)","rgba(0,174,25
 const consola=document.getElementById("consola")
 const menu=document.getElementById("menu")
 const game=document.getElementById("game")
-const typesofgun=[["Riffle",36],["shotgun",6]]
+const typesofgun=[["Riffle",36],["shotgun",6],["rocket",1]]
 let startbutton
 let player
 let stick
@@ -28,6 +28,7 @@ let maxx
 let maxy
 let ds
 let home=true
+let explosion
 
 //Arrays
 let pickguns
@@ -36,6 +37,7 @@ let bulletmap
 let guns
 let result
 let enemys
+let explosions
 
 //Player variables
 let health
@@ -49,9 +51,6 @@ let movespeed
 let shield
 
 //Others
-let gunidx
-let bulletidx
-let enemyidx
 let moveidx
 let shootidx
 let reloadidx
@@ -68,16 +67,18 @@ let mousey
 let playtime
 let windowx = window.innerWidth;
 let windowy = window.innerHeight;
-let newAura
+
 
 //Audios
 let shotgunsound= new Audio('shotgun.mp3');
 let Rifflesound= new Audio('Riffle.mp3');
+let rocketsound= new Audio('rocket.mp3');
 Rifflesound.volume="0.2"
 let shotgunreload= new Audio('reloadshotgun.mp3');
 let Rifflereload= new Audio('reloadriffle.mp3');
 Rifflereload.volume="0.2"
 let shotgunreloadfinish= new Audio('shotgunreloadfinish.mp3');
+let rocketreload= new Audio('reloadrocket.mp3');
 
 searchMenuitems()
 function searchMenuitems(){
@@ -161,6 +162,7 @@ shieldmap=[]
 bulletmap=[]    
 result=[]
 enemys=[]
+explosions=[]
 health=100
 PlayerX=bodyx/2
 PlayerY=bodyy/2
@@ -188,6 +190,7 @@ sy=0
 mousex=0
 mousey=0
 playtime=0
+explosion=null
 }
 function goHome(){
 home=true
@@ -196,7 +199,8 @@ menu.innerHTML=`<button id="startbtn">START</button>
   <div id="title"><strong>MIDWAY<br>SHOOTDOWN</strong>  </div>`
 Rifflereload.pause()
 Rifflesound.pause()
-deleteEverything()
+rocketreload.pause()
+shotgunreload.pause()
 window.scroll(0,0)
 searchMenuitems()
 }
@@ -267,7 +271,7 @@ function moveplayer(){
         mybullet=document.createElement("img")
 mybullet.className="bullet"
 mybullet.src="Bullet.png"
-    document.body.appendChild(mybullet)
+    game.appendChild(mybullet)
     mybullet.style.left=PlayerX+7+"px"
     mybullet.style.top=PlayerY-10+"px"
     mybullet.style.transform=`rotateZ(${angle}deg)`
@@ -344,18 +348,31 @@ function bulletmove(){
                 var r=myArray[7]
                 x=Math.round(x+mx)
                 y=Math.round(y+my)
-                c++
+                c+=1000/fps
+                var cmax
+                if (type=="Riffleb"){
+                    cmax=450
+
+                }else if(type=="shotgunb"){
+                    cmax=300
+                }else if (type=="rocketb"){
+                    cmax=200
+                }
                 b.style.left=x-15+"px"
                 b.style.top=y-15+"px"
-                if(c<200&&(x<bodyx && x>min)&&(y<bodyy && y>min)){
+
+                
+                if(c<cmax&&(x<bodyx && x>min)&&(y<bodyy && y>min)){
                     var myArray2=[b,x,y,mx,my,c,type,r]
                     bulletmap[idx]=myArray2
             }else{
-                bulletmap[idx]=0
+                bulletmap.splice(index,1)
                 b.remove()
-                
+                if (type=="rocketb"){
+                    createExplosion(x,y,r)
+                }
             }
-    }
+    } 
 
 }}
 setTimeout(function(){bulletmove()},1000/fps)
@@ -365,15 +382,15 @@ function createEnemy(){
     if (home==false){
     let newEnemy=document.createElement("div")
     newEnemy.className="enemy"
-    newEnemy=document.body.appendChild(newEnemy)
+    newEnemy=game.appendChild(newEnemy)
     newEnemy.innerHTML=`<div style="top:5px;left:1px;" class="eye"><div class="eyeball"></div></div><div style="top:5px;left:26px;"class="eye"><div class="eyeball"></div></div>`
     var myArray=[]
     myArray[0]=newEnemy
     myArray[1]=Math.floor(Math.random()*bodyx)
     myArray[2]=Math.floor(Math.random()*bodyy)
     myArray[3]=100
-    enemys[enemyidx]=myArray
-    enemyidx++
+    enemys.push(myArray)
+
     setTimeout(function(){createEnemy()},5000-(playtime*50))
     }
 }
@@ -405,21 +422,28 @@ if (!(enemys[index]==0)){
     }
 
 
-    for (let index=0;index< bulletmap.length;index++){
-if (!(bulletmap[index]==0)){
+    for (let idx=0;idx< bulletmap.length;idx++){
+if (!(bulletmap[idx]==undefined)){
 
-        var myArray=bulletmap[index]
+        var myArray=bulletmap[idx]
         var b=myArray[0]
         var bx=myArray[1]
         var by=myArray[2]
         var type=myArray[6]
         var r=myArray[7]
+        
         if((x-35<bx&& x+35>bx) && (y-35 <by  && y+35>by)){
-            bulletmap[index]=0
+            bulletmap.splice(idx,1)
+            
+            if (type=="rocketb"){
+            createExplosion(bx,by,r)
+            b.remove()
+            }else{
+            
             var damage=0
-            if (type=="Bullet"){
+            if (type=="Riffleb"){
                 damage=5
-            }else if (type=="Bullet1"){
+            }else if (type=="shotgunb"){
                 damage=30
             }
             damage=damage+(r*5)
@@ -439,21 +463,38 @@ if (!(bulletmap[index]==0)){
                 Hitanimation(e,0)
 
             }
-           
+        }
+    
         }
     
     }}
+    if (!(explosion==null)){
+        var myExplosionArray=explosion
+        var ex=myExplosionArray[0]
+        var ey=myExplosionArray[1]
+        var er=myExplosionArray[2]
+        var explosioncollisions=150
+        if ((x-explosioncollisions<ex&& x+explosioncollisions>ex) && (y-explosioncollisions <ey  && y+explosioncollisions>ey)){
+            var edamage=80+(er*5)
+            l+=-edamage
+            damageshow(x,y,edamage)
+        }
+    }
+        if (index==enemys.length-1){
+            explosion=null
+        }
+
 if (l<0.1){
     e.remove()
-    enemys[index]=0
+    enemys.splice(index,1)
     continue;
 }
     var epx=PlayerX-x
     var epy=PlayerY-y
-    for (let index = 0; index < 2; index++) {
+    for (let idx2 = 0; idx2 < 2; idx2++) {
 
-        e.getElementsByClassName("eyeball")[index].style.left=epx/120+"px"
-        e.getElementsByClassName("eyeball")[index].style.top=epy/120+"px"
+        e.getElementsByClassName("eyeball")[idx2].style.left=epx/120+"px"
+        e.getElementsByClassName("eyeball")[idx2].style.top=epy/120+"px"
     }
     var pcolissions=35
 if ((x<PlayerX+pcolissions && x>PlayerX-pcolissions) && (y<PlayerY+pcolissions && y>PlayerY-pcolissions))
@@ -517,8 +558,10 @@ bulletshow[currentslot].innerText=""
 }
 }
 if (key=="r"){
+    if(guns[currentslot][1]<guns[currentslot][2]){
 reloadidx++
 reload(currentslot,reloadidx)
+}
 }
 var nkey=Number(key)
 if (nkey>0&&nkey<nofslots+1){
@@ -704,13 +747,16 @@ guns[currentslot][1]--
         if (guns[currentslot][0]=="Riffle"){
      
             shotcooldown=150
-            createBullet(angle,"Bullet")
+            createBullet(angle,"Riffleb")
         }else if (guns[currentslot][0]=="shotgun"){
 
             shotcooldown=1500
-            createBullet(angle,"Bullet1")
-            createBullet(angle+15,"Bullet1")
-            createBullet(angle-15,"Bullet1")
+            createBullet(angle,"shotgunb")
+            createBullet(angle+15,"shotgunb")
+            createBullet(angle-15,"shotgunb")
+        }else if (guns[currentslot][0]=="rocket"){
+            shotcooldown=500
+            createBullet(angle,"rocketb")
         }
             for (let index = 0; index < 4; index++) {
     var spridx=0
@@ -723,17 +769,16 @@ gun.src=`${guns[currentslot][0]}${spridx}.png`
 }},250*index)
        
 }
-
+if (guns[currentslot][1]<1){
+Rifflesound.pause()
+Rifflesound.load()
+reloadidx++
+reload(currentslot,reloadidx)
+}
 
 shootidx++
 shotcooldownmake(shootidx,shotcooldown)
     }
-}else{
-
-    Rifflesound.pause()
-    Rifflesound.load()
-    reloadidx++
-    reload(currentslot,reloadidx)
 }
 }}
 function shotcooldownmake(myidx,shotcooldown){
@@ -758,7 +803,7 @@ function createBullet(a,type){
     mybullet=document.createElement("img")
     mybullet.className="bullet"
     mybullet.src=type+".png"
-        document.body.appendChild(mybullet)
+        game.appendChild(mybullet)
         mybullet.style.left=PlayerX+7+"px"
         mybullet.style.top=PlayerY-10+"px"
         mybullet.style.transform=`rotateZ(${a-270}deg)`
@@ -767,6 +812,8 @@ function createBullet(a,type){
         Rifflesound.play();
         }else if (guns[currentslot][0]=="shotgun"){
         shotgunsound.play();
+        }else if (guns[currentslot][0]=="rocket"){
+
         }
         var myArray=[]
         myArray[0]=mybullet
@@ -777,8 +824,8 @@ function createBullet(a,type){
         myArray[5]=0
         myArray[6]=type
         myArray[7]=guns[currentslot][4]
-        bulletmap[bulletidx]=myArray
-        bulletidx++
+        bulletmap.push(myArray)
+
         }
     }
 function Hitanimation(e,r){
@@ -794,10 +841,10 @@ function Hitanimation(e,r){
     }
 }
 function createTree(x,y){
-let newTree=document.createElement("img")
+var newTree=document.createElement("img")
 newTree.src="tree.png"
 newTree.className="tree"
-newTree=document.body.appendChild(newTree)
+newTree=game.appendChild(newTree)
 newTree.style.left=x+"px"
 newTree.style.top=y+"px"
 }
@@ -821,7 +868,7 @@ function Pickgun(idx)
         targetslot=index
         selectslot(currentslot,targetslot)
         break;
-       }
+       }''
         if (index==guns.length-1){
             targetslot=currentslot
             var currentArray=guns[currentslot]
@@ -847,7 +894,7 @@ pickguns[idx]=myArray
 function createPickgun(x,y,type,b,mb,r){
 
 var newGun=document.createElement("img")
-newGun=document.body.appendChild(newGun)
+newGun=game.appendChild(newGun)
 newGun.className="gun"
 newGun.style.left=x-25+"px"
 newGun.style.top=y-25+"px"
@@ -862,8 +909,8 @@ myArray[3]=type
 myArray[4]=b
 myArray[5]=mb
 myArray[6]=r
-pickguns[gunidx]=myArray
-gunidx++
+pickguns.push(myArray)
+
 
 }
 
@@ -874,10 +921,10 @@ function createShield(idx,ws){
 var s=shieldmap[idx]
 s.remove()
 
-shieldmap[idx]=0
-        }
-newAura=document.createElement("img")
-newAura=document.body.appendChild(newAura)
+shieldmap.splice(idx,1)
+}
+var newAura=document.createElement("img")
+newAura=game.appendChild(newAura)
 newAura.src="shield.png"
 newAura.className="shield"
 shield=true
@@ -898,23 +945,13 @@ setTimeout(function(){Followplayer(s,c+0.001,e)}
 }
 }
 function reload(slot,myidx){
-    guns[slot][3]=true
-    if (guns[slot][0]=="Riffle"){
-        Rifflereload.load()
-        Rifflereload.play()
-    setTimeout(function(){
-        if (myidx==reloadidx){
-            guns[slot][1]=guns[slot][2]
-            guns[slot][3]=false
-    if (mouse==true){
-    mouseclick()
-    }
+guns[slot][3]=true
+if ((guns[slot][0]=="rocket")||(guns[slot][0]=="Riffle")){
+normalreload(slot,guns[slot][0],myidx)
+}else if(guns[slot][0]=="shotgun"){
+reloadidx2++
+reloadonebullet(slot,reloadidx2)
 }
-    },3500)
-    }else if(guns[slot][0]=="shotgun"){
-        reloadidx2++
-        reloadonebullet(slot,reloadidx2)
-    }
 }
 function reloadonebullet(slot,myidx){
 
@@ -961,31 +998,17 @@ gun.src=guns[currentslot][0]+".png"
 
 function createShieldElement(x,y){
 var newShield=document.createElement("img")
-newShield=document.body.appendChild(newShield)
+newShield=game.appendChild(newShield)
 newShield.className="shielditem"
 newShield.src="shielditem.png"
 newShield.style.left=(x-50)+"px"
 newShield.style.top=(y-50)+"px"
 newShield.style.background='radial-gradient(circle, rgba(245,255,99,1) 0%, rgba(255,255,255,0) 70%)'
-var gidx=0
-
-    for (let index=0;index<shieldmap.length;index++)
-        {
-            if (shieldmap[index]==0){
-                gidx=index
-                break;
-            }
-            if (index==shieldmap.length-1){
-                   gidx=shieldmap.length
-                break;
-             
-                
-            }
-        
-}
 
 
-        shieldmap[gidx]=newShield
+
+
+        shieldmap.push(newShield)
 }
 function playtimeadd(){
 playtime++
@@ -1079,7 +1102,7 @@ function selectslot(oldslot,newslot){
 }
 function damageshow(x,y,damage){
     var newDamageshow=document.createElement("div")
-    newDamageshow=document.body.appendChild(newDamageshow)
+    newDamageshow=game.appendChild(newDamageshow)
     newDamageshow.className="Damageshow"
     newDamageshow.innerText=damage
     newDamageshow.style.left=x+"px"
@@ -1094,10 +1117,11 @@ function createRandomPickgun(times){
     for (let index = 0; index < times; index++){
         var x=randomnumber(75,bodyx-75)
         var y=randomnumber(75,bodyy-75)
-        var randomgun=randomnumber(0,typesofgun.length-1)
+        var randomgun=(randomnumber(1,typesofgun.length+1)-1)
         var type=typesofgun[randomgun][0]
         var mb=typesofgun[randomgun][1]
         var r=randomnumber(0,5)
+        consolelog(randomgun)
         createPickgun(x,y,type,mb,mb,r)
     }
 }
@@ -1107,34 +1131,43 @@ function randomnumber(min, max) {
     }else{
     return Math.floor(Math.random() * (max - min) ) + min;
     }}
-function deleteEverything(){
-player.remove()
-for (let index = 0; index <    enemys.length; index++) {
-    if(!(enemys[index]==0)){
-    enemys[index][0].remove()
+
+function normalreload(slot,type,myidx){
+var reloadtime
+    if (type=="Riffle"){
+        Rifflereload.load()
+        Rifflereload.play()
+        reloadtime=3500
+    }else if (type=="rocket"){
+        rocketreload.load()
+        rocketreload.play()
+        reloadtime=2500
+    }
+    setTimeout(function(){
+        if (myidx==reloadidx){
+    guns[slot][1]=guns[slot][2]
+    guns[slot][3]=false
+    if (mouse==true){
+    mouseclick()
     }
 }
-for (let index = 0; index <    bulletmap.length; index++) {
-    if(!(bulletmap[index]==0)){
-    bulletmap[index][0].remove()
-    }
+},reloadtime)
 }
-for (let index = 0; index <    pickguns.length; index++) {
-    if(!(pickguns[index]==0)){
-    pickguns[index][0].remove()
-    }
+createExplosion(100,100,1)
+function createExplosion(x,y,r){
+    rocketsound.load()
+rocketsound.play()
+var newExplosion=document.createElement("div")
+newExplosion=game.appendChild(newExplosion)
+newExplosion.className="explosion"
+newExplosion.style.left=x-50+"px"
+newExplosion.style.top=y-50+"px"
+if (enemys.length>0){
+explosion=[x,y,r]
 }
-for (let index = 0; index <    shieldmap.length; index++) {
-    if(!(shieldmap[index]==0)){
-    shieldmap[index].remove()
-    }
+
+setTimeout(function(){
+newExplosion.remove()
+},500)
 }
-UI.remove()
-gun.remove()
-newAura.remove()
-ehealth.remove()
-healthbar.remove()
-crosshair.remove()
-document.documentElement.style.cursor="default"
-document.getElementsByClassName("tree")[0].remove()
-}
+
