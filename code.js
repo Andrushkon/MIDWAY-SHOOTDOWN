@@ -1153,7 +1153,7 @@ var reloadtime
 }
 },reloadtime)
 }
-createExplosion(100,100,1)
+
 function createExplosion(x,y,r){
     rocketsound.load()
 rocketsound.play()
