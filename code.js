@@ -531,16 +531,16 @@ var collect=false
 document.addEventListener("keydown",function(){
     if (tactil==false){
 let key=event.key
-if (key=="w"){
+if (key=="w"||key=="ArrowUp"){
 up=true
 }
-if (key=="s"){
+if (key=="s"||key=="ArrowDown"){
 down=true
 }
-if (key=="a"){
+if (key=="a"||key=="ArrowLeft"){
 left=true
 }
-if (key=="d"){
+if (key=="d"||key=="ArrowRight"){
 right=true
 }
 if (key=="e"){
@@ -575,16 +575,16 @@ if (key=="Escape"){
 
 document.addEventListener("keyup",function(){
 let key=event.key
-if (key=="w"){
+if (key=="w"||key=="ArrowUp"){
 up=false
 }
-if (key=="s"){
+if (key=="s"||key=="ArrowDown"){
 down=false
 }
-if (key=="a"){
+if (key=="a"||key=="ArrowLeft"){
 left=false
 }
-if (key=="d"){
+if (key=="d"||key=="ArrowRight"){
 right=false
 }
 if (key=="e"){
@@ -1160,8 +1160,8 @@ rocketsound.play()
 var newExplosion=document.createElement("div")
 newExplosion=game.appendChild(newExplosion)
 newExplosion.className="explosion"
-newExplosion.style.left=x-50+"px"
-newExplosion.style.top=y-50+"px"
+newExplosion.style.left=x+"px"
+newExplosion.style.top=y+"px"
 if (enemys.length>0){
 explosion=[x,y,r]
 }
