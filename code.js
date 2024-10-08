@@ -475,7 +475,7 @@ var myExplosionArray=punching[1]
 var px=myExplosionArray[0]
 var py=myExplosionArray[1]
 if (checkCollisions(px,py,x,y,70)){
-var pdamage=35*damagemultiplayer
+var pdamage=20*damagemultiplayer
 l+=-pdamage
 damageshow(x,y,pdamage)
 }
