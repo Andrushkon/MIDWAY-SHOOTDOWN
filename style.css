@@ -152,6 +152,7 @@
   z-index: 20;
   bottom: 5px;
   color: white;
+  
   }
   #gunslotcontainer{
     position: absolute;
@@ -177,7 +178,7 @@
   background-color: rgba(153, 255, 36, 1);
   display: block;
   translate: 0px 400px;
-    margin: auto;
+  margin: auto;
   text-align: center;
   border: 10px rgba(219, 255, 179, 0.73) solid ;
   box-shadow: 6px 6px 0px rgba(0,0,0,0.2);
@@ -204,3 +205,32 @@
     0%{background-color: red;scale:1 1;}
     100%{background-color: yellow;scale: 25 25;opacity: 0;}
   }
+.chargebar{
+  width: 100px;
+  height: 25px;
+  margin: auto;
+  margin-bottom: 0%;
+  margin-top:  70vh;
+  background-color: hsl(50, 50%, 50%);
+  border: 3px solid black ;
+  text-align: center;
+  font-family: "Anton", sans-serif;
+  font-size: 20px;
+}
+.punch{
+  width: 15px;
+  height: 15px;
+  border-radius: 15px;
+  border: 5px solid black;
+  background-color: skyblue;
+  position:absolute;
+
+}
+.leftpunch{
+  left: -5px;
+  top: -20px;
+}
+.rightpunch{
+  left: 25px;
+  top: -20px;
+}
